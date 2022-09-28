@@ -1,6 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { Component, Input, ViewChild, OnInit } from '@angular/core';
+import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+ 
+import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-grafica-barra',
@@ -9,61 +11,78 @@ import { BaseChartDirective } from 'ng2-charts';
 })
 export class GraficaBarraComponent implements OnInit {
 
-  /* A decorator that allows us to access the properties of a component. */
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+  @Input() horizontal: boolean = false;
+  @Input() barChartData!: ChartData<'bar'>;
 
-  public barChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-  };
-  public barChartType: ChartType = 'bar';
-
-  public barChartData: ChartData<'bar'> = {
-    labels: [ '2016', '2017', '2018', '2019', '2020', '2021', '2022' ],
-    datasets: [
-      { data: [ 65, 59, 80, 81, 56, 55, 40 ], label: 'Series A', backgroundColor: '#F58202', hoverBackgroundColor: '#4290EB' },
-      { data: [ 28, 48, 40, 19, 86, 27, 90 ], label: 'Series B', backgroundColor: '#D45608', hoverBackgroundColor: '#31A8D4' },
-      { data: [ 38, 58, 50, 29, 96, 37, 100 ], label: 'Series C', backgroundColor: '#EB3903', hoverBackgroundColor: '#39F6F7' },
-    ]
-  };
-
-  constructor() { }
+  constructor(){}
 
   ngOnInit(): void {
+      if (this.horizontal){
+          //Esto muestra la gráfica en sentido horizontal y todos los datos en ese sentido.
+          this.barChartOptions!.indexAxis = 'y';
+          this.barChartOptions!.scales!["y"]!.min = 0;
+      }
   }
 
-  public randomize(): void {
-    // Only Change 3 values
-    this.barChartData.datasets[0].data = [
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-    ];
-    // Only Change 3 values
-    this.barChartData.datasets[1].data = [
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-    ];
-    // Only Change 3 values
-    this.barChartData.datasets[2].data = [
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-      Math.round( Math.random() * 100),
-    ];
+  public barChartOptions: ChartConfiguration['options'] = {
+      responsive: true,
+      scales: {
+          x: {},
+          y: {
+              min: 10
+          }
+      },
+      plugins: {
+          legend: {
+              display: true,
+          },
+          datalabels: {
+              anchor: 'end',
+              align: 'end'
+          }
+      }
+  }
 
-    this.chart?.update();
+  public barChartType: ChartType = 'bar';
+  public barChartPlugins = [
+      DataLabelsPlugin
+  ];
+  
+  public chartClicked({ event, active }: { event?: ChartEvent, active?: {}[] }): void {}
+
+  public chartHovered({ event, active }: { event?: ChartEvent, active?: {}[] }): void {}
+
+  public randomize(): void {
+      // Only Change 3 values
+      this.barChartData.datasets[0].data = [
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100)];
+      this.barChartData.datasets[1].data = [
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100)
+      ];
+      this.barChartData.datasets[2].data = [
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100),
+          Math.round(Math.random() * 100)
+      ];
+
+      this.chart?.update();
   }
 
 }
